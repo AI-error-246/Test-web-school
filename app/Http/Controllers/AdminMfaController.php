@@ -14,6 +14,9 @@ class AdminMfaController extends Controller
 {
     public function show(Request $request, SupabaseAuthService $supabase): View|RedirectResponse
     {
+        if (! EnsureAdminConfirmation::mfaRequired()) {
+            return app(EnsureAdminConfirmation::class)->handle($request, fn () => redirect()->route('admin.dashboard'));
+        }
         if (EnsureAdminConfirmation::confirmed($request)) {
             return redirect()->route('admin.dashboard');
         }
@@ -41,17 +44,23 @@ class AdminMfaController extends Controller
 
     public function enroll(Request $request, SupabaseAuthService $supabase): RedirectResponse
     {
+        if (! EnsureAdminConfirmation::mfaRequired()) {
+            return app(EnsureAdminConfirmation::class)->handle($request, fn () => redirect()->route('admin.dashboard'));
+        }
         if (! EnsureAdminConfirmation::passwordConfirmed($request)) {
             return $this->expired($request);
         }
+        $stage = 'list_factors';
         try {
             $factors = $supabase->mfaFactors($this->token($request));
             if ($factors === [] && ! $request->session()->has('admin_mfa_enrollment')) {
+                $stage = 'enroll';
                 $enrollment = $supabase->enrollTotp($this->token($request));
                 $request->session()->put('admin_mfa_enrollment', $enrollment);
                 $request->session()->put('admin_mfa_factor', $enrollment['id']);
             }
-        } catch (SupabaseRequestException) {
+        } catch (SupabaseRequestException $exception) {
+            logger()->warning('admin_mfa_setup_failed', ['stage' => $stage, 'status' => $exception->status]);
             throw ValidationException::withMessages(['mfa' => __('messages.mfa_setup_unavailable')]);
         }
 
@@ -60,6 +69,9 @@ class AdminMfaController extends Controller
 
     public function verify(Request $request, SupabaseAuthService $supabase): RedirectResponse
     {
+        if (! EnsureAdminConfirmation::mfaRequired()) {
+            return app(EnsureAdminConfirmation::class)->handle($request, fn () => redirect()->route('admin.dashboard'));
+        }
         if (! EnsureAdminConfirmation::passwordConfirmed($request)) {
             return $this->expired($request);
         }

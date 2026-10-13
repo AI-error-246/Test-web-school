@@ -116,6 +116,8 @@ return [
     'admin_only' => 'Chỉ dành cho tài khoản được cấp quyền quản trị.',
     'secure_access' => 'Truy cập bảo mật',
     'admin_login_help' => 'Đăng nhập bằng email, mật khẩu và mã từ ứng dụng xác thực của bạn.',
+    'admin_password_login_help' => 'Đăng nhập bằng email và mật khẩu tài khoản quản trị.',
+    'admin_password_session_help' => 'Phiên quản trị được xác nhận lại bằng mật khẩu sau 30 phút.',
     'admin_email' => 'Email quản trị',
     'password' => 'Mật khẩu',
     'show_password' => 'Hiện mật khẩu',

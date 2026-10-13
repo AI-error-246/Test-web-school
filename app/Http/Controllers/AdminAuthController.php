@@ -60,6 +60,6 @@ class AdminAuthController extends Controller
         $request->session()->put('admin_password_confirmation', ['user_id' => $user->id, 'confirmed_at' => now()->timestamp]);
         $request->session()->forget('demo_auth');
 
-        return redirect()->route('admin.mfa');
+        return redirect()->route(EnsureAdminConfirmation::mfaRequired() ? 'admin.mfa' : 'admin.dashboard');
     }
 }

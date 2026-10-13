@@ -96,6 +96,7 @@ return [
     'account_unavailable' => 'The account is blocked or no longer available.',
     'session_expired' => 'Your session has expired. Please sign in again.',
     'admin_confirmation' => 'Please confirm your password and verification code to enter the admin area.',
+    'admin_password_confirmation' => 'Please confirm your password to enter the admin area.',
     'profile_name' => 'Full name',
     'profile_phone' => 'Phone',
     'profile_university' => 'University',

@@ -116,6 +116,8 @@ return [
     'admin_only' => '管理者権限を持つアカウント専用です。',
     'secure_access' => '安全なアクセス',
     'admin_login_help' => 'メールアドレス、パスワード、認証アプリのコードでログインしてください。',
+    'admin_password_login_help' => '管理者アカウントのメールアドレスとパスワードでログインしてください。',
+    'admin_password_session_help' => '管理者アクセスは30分後にパスワードで再確認する必要があります。',
     'admin_email' => '管理者メールアドレス',
     'password' => 'パスワード',
     'show_password' => 'パスワードを表示',

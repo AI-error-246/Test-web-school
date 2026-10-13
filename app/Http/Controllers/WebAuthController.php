@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\SupabaseRequestException;
+use App\Http\Middleware\EnsureAdminConfirmation;
 use App\Models\CandidateProfile;
 use App\Models\User;
 use App\Services\SupabaseAuthService;
@@ -69,7 +70,7 @@ class WebAuthController extends Controller
         if ($user->role === 'admin') {
             $request->session()->put('admin_password_confirmation', ['user_id' => $user->id, 'confirmed_at' => now()->timestamp]);
 
-            return redirect()->route('admin.mfa');
+            return redirect()->route(EnsureAdminConfirmation::mfaRequired() ? 'admin.mfa' : 'admin.dashboard');
         }
         $intended = $request->session()->get('url.intended');
         $intendedPath = is_string($intended) ? parse_url($intended, PHP_URL_PATH) : null;

@@ -116,6 +116,8 @@ return [
     'admin_only' => 'Only for accounts with administrator access.',
     'secure_access' => 'Secure access',
     'admin_login_help' => 'Sign in with your email, password and a code from your authenticator app.',
+    'admin_password_login_help' => 'Sign in with your administrator email and password.',
+    'admin_password_session_help' => 'Admin access must be reconfirmed with your password after 30 minutes.',
     'admin_email' => 'Admin email',
     'password' => 'Password',
     'show_password' => 'Show password',

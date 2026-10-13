@@ -96,6 +96,7 @@ return [
     'account_unavailable' => 'アカウントは停止されているか、利用できなくなっています。',
     'session_expired' => 'セッションの有効期限が切れました。再度ログインしてください。',
     'admin_confirmation' => '管理画面にアクセスするには、パスワードと認証コードを確認してください。',
+    'admin_password_confirmation' => '管理画面にアクセスするには、パスワードを確認してください。',
     'profile_name' => '氏名',
     'profile_phone' => '電話番号',
     'profile_university' => '学校',

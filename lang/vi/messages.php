@@ -96,6 +96,7 @@ return [
     'account_unavailable' => 'Tài khoản đã bị khóa hoặc không còn khả dụng.',
     'session_expired' => 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
     'admin_confirmation' => 'Vui lòng xác nhận mật khẩu và mã xác thực để vào khu vực quản trị.',
+    'admin_password_confirmation' => 'Vui lòng xác nhận mật khẩu để vào khu vực quản trị.',
     'profile_name' => 'Họ tên',
     'profile_phone' => 'Điện thoại',
     'profile_university' => 'Trường học',

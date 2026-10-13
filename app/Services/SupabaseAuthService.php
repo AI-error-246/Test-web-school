@@ -148,7 +148,13 @@ class SupabaseAuthService
             || ($factor['type'] ?? null) !== 'totp' || ! is_array($factor['totp'] ?? null)
             || ! is_string($factor['totp']['secret'] ?? null) || ! preg_match('/\A[A-Z2-7]{16,256}\z/', $factor['totp']['secret'])
             || ! is_string($factor['totp']['qr_code'] ?? null) || $factor['totp']['qr_code'] === ''
-            || strlen($factor['totp']['qr_code']) > 200000) {
+            || strlen($factor['totp']['qr_code']) > 1024 * 1024) {
+            logger()->warning('admin_mfa_enrollment_invalid_response', [
+                'id_valid' => is_string($factor['id'] ?? null) && Str::isUuid($factor['id']),
+                'type_valid' => ($factor['type'] ?? null) === 'totp',
+                'secret_valid' => is_string($factor['totp']['secret'] ?? null) && (bool) preg_match('/\A[A-Z2-7]{16,256}\z/', $factor['totp']['secret']),
+                'qr_bytes' => is_string($factor['totp']['qr_code'] ?? null) ? strlen($factor['totp']['qr_code']) : null,
+            ]);
             throw new SupabaseRequestException('AUTH_UNAVAILABLE', 503);
         }
 

@@ -82,7 +82,7 @@ class AdminMfaTest extends TestCase
     public function test_enrollment_is_private_and_qr_is_an_image_instead_of_inline_svg(): void
     {
         $admin = User::factory()->admin()->create();
-        $svg = '<svg xmlns="http://www.w3.org/2000/svg"><script>alert("provider-svg")</script></svg>';
+        $svg = '<svg xmlns="http://www.w3.org/2000/svg"><script>alert("provider-svg")</script><desc>'.str_repeat('x', 321600).'</desc></svg>';
         Http::fake([
             self::AUTH.'/user' => Http::response(['id' => $admin->id, 'factors' => []]),
             self::AUTH.'/factors' => Http::response(['id' => self::FACTOR, 'type' => 'totp', 'totp' => ['secret' => self::SECRET, 'qr_code' => $svg]]),

@@ -2,6 +2,16 @@
 
 Website tuyển dụng thực tập với giao diện Blade tiếng Việt/Anh/Nhật, CSS/JS trực tiếp, backend Laravel 13 và database PostgreSQL. Supabase Auth quản lý đăng ký, xác nhận email và đăng nhập thật. Không lưu mật khẩu người dùng trong PostgreSQL ứng dụng.
 
+## Admin đăng nhập bằng mật khẩu — D41 (14/10/2026)
+
+Theo yêu cầu mới nhất, workspace hiện đặt `ADMIN_MFA_REQUIRED=false`: Admin ACTIVE nhập email/mật khẩu tại `/admin/login` hoặc `/login` rồi vào bảng quản trị, không cần QR/mã 6 số. Quyền quản trị vẫn hết hạn sau 30 phút; giữ kiểm trạng thái tài khoản, thu hồi phiên, CSRF và giới hạn đăng nhập. Tài khoản Guest/Candidate/Employer không được cấp quyền Admin.
+
+Biến cấu hình chỉ đọc ở backend; mặc định trong code và `.env.example` là `true`. Để bật lại, đặt `ADMIN_MFA_REQUIRED=true` trong `.env` rồi chạy `php artisan config:clear`. Phiên chỉ xác nhận mật khẩu sẽ phải qua MFA lại. Không xóa factor, đổi mật khẩu hay tắt MFA trong Supabase; khôi phục mật khẩu của tài khoản đã có factor vẫn yêu cầu mã như trước. `.env` thật không được đưa lên GitHub.
+
+Lỗi “Chưa thể thiết lập xác thực” trước đó đã xác định từ phản hồi thật: SVG QR 321.600 byte vượt giới hạn 200.000 byte của website. Đã nâng giới hạn lên 1 MiB, giữ kiểm dữ liệu và hiển thị qua ảnh, không nhúng SVG trực tiếp. Log chẩn đoán chỉ ghi bước/trạng thái/độ dài, không ghi khóa QR, OTP hoặc token. Có regression nhận QR lớn và từ chối quá giới hạn để dùng khi bật lại MFA.
+
+Kiểm chứng D41: **201 tests PostgreSQL / 1.427 assertions PASS** cho đăng nhập/MFA/recovery/phân quyền/security headers/traffic guard/đa ngôn ngữ; gồm 25 ca mới cho chế độ chỉ mật khẩu. Pint dirty và diff check đạt. Website thật 3001 đã đọc cấu hình false, trang đăng nhập trả HTTP 200 và hướng dẫn mới. Các test Supabase dùng HTTP fake, không phải bằng chứng đăng nhập tài khoản Admin thật sau sửa; không hoàn tất QR/OTP thật thay người dùng.
+
 ## GitHub riêng tư — D40 (14/10/2026)
 
 **Quyết định hiện hành:** người dùng chọn chỉ đưa mã lên GitHub và dừng triển khai hosting. Không còn chờ tài khoản Oracle, không tạo VM/domain hoặc deploy. Website tiếp tục dùng cách chạy local hiện có. Các ghi chép đánh giá host và hướng dẫn Oracle bên dưới chỉ lưu tham khảo, không phải tác vụ đang chờ thực hiện.
@@ -125,13 +135,13 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\PROJECT\04_Code\laravel\ru
 powershell -NoProfile -ExecutionPolicy Bypass -File .\PROJECT\04_Code\laravel\run.ps1 start
 ```
 
-Mở **http://127.0.0.1:3001**. Backend hiện dùng Supabase Auth, PostgreSQL và Storage; đăng nhập bằng tài khoản thật. Trang quản trị: **http://127.0.0.1:3001/admin/login**, chỉ nhận Admin đang hoạt động và yêu cầu mật khẩu + mã từ ứng dụng xác thực (TOTP). Lần đầu phải thiết lập ứng dụng; quyền quản trị hết hạn sau 30 phút. Đăng nhập Admin qua `/login` cũng phải qua MFA; `/demo/admin` luôn bị vô hiệu hóa. Demo Candidate/Employer chỉ còn dành cho môi trường local bật tường minh, hiện `DEMO_MODE=false`.
+Mở **http://127.0.0.1:3001**. Backend hiện dùng Supabase Auth, PostgreSQL và Storage; đăng nhập bằng tài khoản thật. Trang quản trị: **http://127.0.0.1:3001/admin/login**, chỉ nhận Admin đang hoạt động. Workspace hiện tắt bước QR/mã 6 số theo D41; chỉ cần email/mật khẩu, quyền quản trị hết hạn sau 30 phút. Với `ADMIN_MFA_REQUIRED=true` (mặc định khi cài mới), cả `/admin/login` và `/login` yêu cầu thêm Supabase TOTP. `/demo/admin` luôn bị vô hiệu hóa. Demo Candidate/Employer chỉ còn dành cho môi trường local bật tường minh, hiện `DEMO_MODE=false`.
 
 Ctrl+C dừng web server. `run.ps1 db-status` kiểm tra database; `run.ps1 db-stop` chỉ dừng cluster riêng của đồ án. Các lệnh không thay đổi PostgreSQL service có sẵn của máy. Không chạy `migrate:fresh` trên database phát triển.
 
 ## MFA và email trạng thái — D34
 
-MFA dùng Supabase TOTP; xác nhận mật khẩu có hiệu lực 10 phút để hoàn tất bước mã. Tài khoản đã bật MFA phải nhập mã cả trong luồng khôi phục mật khẩu; recovery không tự đăng nhập. Nếu mất thiết bị, người quản lý project cần xác minh danh tính rồi xử lý factor trong Supabase; website không có nút bỏ qua MFA. Không lưu khóa TOTP vào tài liệu/tệp tài khoản Admin.
+Khi `ADMIN_MFA_REQUIRED=true`, MFA dùng Supabase TOTP; xác nhận mật khẩu có hiệu lực 10 phút để hoàn tất bước mã. Tài khoản đã bật MFA vẫn phải nhập mã trong luồng khôi phục mật khẩu, kể cả khi D41 tắt bước MFA đăng nhập Admin; recovery không tự đăng nhập. Nếu mất thiết bị, người quản lý project cần xác minh danh tính rồi xử lý factor trong Supabase. Việc tắt yêu cầu MFA đăng nhập chỉ qua cấu hình backend, không có nút bỏ qua trên website. Không lưu khóa TOTP vào tài liệu/tệp tài khoản Admin.
 
 Email trạng thái mặc định `APPLICATION_MAIL_MODE=preview`: mỗi lần Employer đổi trạng thái hợp lệ tạo một hàng riêng trong `application_status_emails`, cùng giao dịch với lịch sử. Chạy từ thư mục Laravel:
 

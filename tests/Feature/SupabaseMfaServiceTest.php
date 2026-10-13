@@ -106,8 +106,24 @@ class SupabaseMfaServiceTest extends TestCase
             'missing secret' => [['totp' => ['secret' => null]]],
             'invalid secret' => [['totp' => ['secret' => '<private-provider-value>']]],
             'missing QR' => [['totp' => ['qr_code' => '']]],
-            'oversize QR' => [['totp' => ['qr_code' => str_repeat('x', 200001)]]],
+            'oversize QR' => [['totp' => ['qr_code' => str_repeat('x', 1024 * 1024 + 1)]]],
         ];
+    }
+
+    public function test_accepts_provider_svg_larger_than_the_legacy_enrollment_limit(): void
+    {
+        $opening = '<svg xmlns="http://www.w3.org/2000/svg"><desc>';
+        $closing = '</desc></svg>';
+        $svg = $opening.str_repeat('x', 321600 - strlen($opening.$closing)).$closing;
+        $payload = $this->enrollmentPayload();
+        $payload['totp']['qr_code'] = $svg;
+        Http::fake([self::URL.'/factors' => Http::response($payload)]);
+
+        $factor = app(SupabaseAuthService::class)->enrollTotp('server-access');
+
+        $this->assertSame($svg, $factor['qr_code']);
+        $this->assertSame(self::FACTOR, $factor['id']);
+        Http::assertSentCount(1);
     }
 
     public function test_challenges_then_verifies_code_and_returns_elevated_rotated_credentials(): void

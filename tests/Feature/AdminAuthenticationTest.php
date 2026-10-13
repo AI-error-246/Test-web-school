@@ -182,4 +182,192 @@ class AdminAuthenticationTest extends TestCase
             'access_token' => 'test-access', 'refresh_token' => 'test-refresh', 'expires_in' => 3600, 'token_type' => 'bearer',
         ])]);
     }
+
+    #[DataProvider('passwordEntryPoints')]
+    public function test_optional_mfa_password_login_rotates_session_and_opens_admin_without_mfa_calls(string $route): void
+    {
+        config(['auth.admin_mfa_required' => false]);
+        $admin = User::factory()->admin()->create();
+        $this->fakeIdentity($admin);
+        $this->withSession(['sentinel' => true]);
+        $oldId = session()->getId();
+
+        $this->post(route($route), ['email' => $admin->email, 'password' => 'safe-test-password'])
+            ->assertRedirect(route('admin.dashboard'))->assertSessionHas('admin_password_confirmation.user_id', $admin->id)
+            ->assertSessionMissing('admin_confirmation')->assertSessionMissing('_old_input.password');
+
+        $this->assertNotSame($oldId, session()->getId());
+        $this->assertAuthenticatedAs($admin);
+        $this->get(route('admin.dashboard'))->assertOk();
+        $this->get(route('admin.login'))->assertRedirect(route('admin.dashboard'));
+        $this->travel(29)->minutes();
+        $this->get(route('admin.dashboard'))->assertOk();
+        $this->travel(1)->minutes();
+        $this->get(route('admin.dashboard'))->assertRedirect(route('admin.login'));
+        Http::assertSentCount(1);
+        Http::assertSent(fn ($request): bool => str_ends_with($request->url(), '/token?grant_type=password'));
+    }
+
+    public static function passwordEntryPoints(): array
+    {
+        return [['admin.login.store'], ['login.store']];
+    }
+
+    #[DataProvider('deniedAccounts')]
+    public function test_optional_mfa_still_rejects_non_admin_or_blocked_password_login(string $role, string $status): void
+    {
+        config(['auth.admin_mfa_required' => false]);
+        $user = User::factory()->create(['role' => $role, 'status' => $status]);
+        $this->fakeIdentity($user);
+
+        $this->post(route('admin.login.store'), ['email' => $user->email, 'password' => 'safe-test-password'])
+            ->assertSessionHasErrors('email')->assertSessionMissing('admin_password_confirmation');
+
+        $this->assertGuest();
+        Http::assertSentCount(1);
+    }
+
+    public function test_optional_mfa_never_allows_guest_or_wrong_password(): void
+    {
+        config(['auth.admin_mfa_required' => false]);
+        $this->get(route('admin.dashboard'))->assertRedirect(route('admin.login'));
+        Http::fake(['*/token?grant_type=password' => Http::response(['error_code' => 'invalid_credentials'], 400)]);
+
+        $this->post(route('admin.login.store'), ['email' => 'admin@example.test', 'password' => 'wrong-secret'])
+            ->assertSessionHasErrors('email')->assertSessionMissing('admin_password_confirmation')->assertSessionMissing('_old_input.password');
+
+        $this->assertGuest();
+        Http::assertSentCount(1);
+    }
+
+    #[DataProvider('invalidPasswordMarkers')]
+    public function test_optional_mfa_rejects_invalid_password_markers_and_never_executes_admin_write(string $failure): void
+    {
+        config(['auth.admin_mfa_required' => false]);
+        $admin = User::factory()->admin()->create(['is_demo' => true]);
+        $candidate = User::factory()->candidate()->create();
+        $marker = ['user_id' => $admin->id, 'confirmed_at' => now()->timestamp];
+        $session = ['auth_version' => (int) $admin->auth_version];
+        if ($failure === 'expired') {
+            $marker['confirmed_at'] = now()->subMinutes(30)->timestamp;
+        } elseif ($failure === 'future') {
+            $marker['confirmed_at'] = now()->addMinute()->timestamp;
+        } elseif ($failure === 'wrong-identity') {
+            $marker['user_id'] = $candidate->id;
+        } elseif ($failure === 'revoked') {
+            $admin->increment('auth_version');
+        } elseif ($failure === 'blocked') {
+            $admin->update(['status' => 'BLOCKED']);
+        } elseif ($failure === 'demo') {
+            $this->app->instance('env', 'local');
+            config(['app.demo_mode' => true]);
+            $session['demo_auth'] = true;
+            $session['_token'] = 'test-csrf';
+        }
+        if ($failure !== 'missing') {
+            $session['admin_password_confirmation'] = $marker;
+        }
+        $this->actingAs($admin)->withSession($session);
+
+        $this->patch(route('admin.users.status', $candidate), ['_token' => 'test-csrf', 'current_status' => 'ACTIVE', 'status' => 'BLOCKED', 'reason' => 'Test'])
+            ->assertRedirect(route('admin.login'));
+
+        $this->assertDatabaseHas('users', ['id' => $candidate->id, 'status' => 'ACTIVE']);
+        $this->assertDatabaseCount('account_status_histories', 0);
+        Http::assertNothingSent();
+    }
+
+    public static function invalidPasswordMarkers(): array
+    {
+        return [['missing'], ['expired'], ['future'], ['wrong-identity'], ['revoked'], ['blocked'], ['demo']];
+    }
+
+    #[DataProvider('optionalMfaEndpoints')]
+    public function test_optional_mfa_endpoints_skip_provider_only_after_password_confirmation(string $method, string $route, bool $confirmed): void
+    {
+        config(['auth.admin_mfa_required' => false]);
+        $admin = User::factory()->admin()->create();
+        $session = ['admin_mfa_enrollment' => ['secret' => 'test-setup-secret'], 'admin_mfa_factor' => 'test-factor'];
+        if ($confirmed) {
+            $session['admin_password_confirmation'] = ['user_id' => $admin->id, 'confirmed_at' => now()->timestamp];
+        }
+
+        $response = $this->actingAs($admin)->withSession($session)->{$method}(route($route));
+
+        $response->assertRedirect(route($confirmed ? 'admin.dashboard' : 'admin.login'));
+        if ($confirmed) {
+            $response->assertSessionMissing('admin_mfa_enrollment')->assertSessionMissing('admin_mfa_factor');
+        }
+        Http::assertNothingSent();
+    }
+
+    public static function optionalMfaEndpoints(): array
+    {
+        return [['get', 'admin.mfa', true], ['post', 'admin.mfa.enroll', true], ['post', 'admin.mfa.verify', true],
+            ['get', 'admin.mfa', false], ['post', 'admin.mfa.enroll', false], ['post', 'admin.mfa.verify', false]];
+    }
+
+    public function test_optional_mfa_preserves_existing_verified_session_and_reenabling_restores_mfa_gate(): void
+    {
+        config(['auth.admin_mfa_required' => false]);
+        $admin = User::factory()->admin()->create();
+        $encode = fn (array $value): string => rtrim(strtr(base64_encode(json_encode($value, JSON_THROW_ON_ERROR)), '+/', '-_'), '=');
+        $token = $encode(['alg' => 'ES256']).'.'.$encode(['sub' => $admin->id, 'aal' => 'aal2', 'exp' => now()->addHour()->timestamp]).'.test-signature';
+        $this->actingAs($admin)->withSession(['admin_confirmation' => ['user_id' => $admin->id, 'confirmed_at' => now()->timestamp, 'mfa' => true], 'supabase_session' => ['access_token' => $token]]);
+        $this->get(route('admin.dashboard'))->assertOk();
+        $this->withSession(['admin_confirmation' => null, 'admin_password_confirmation' => ['user_id' => $admin->id, 'confirmed_at' => now()->timestamp]]);
+        $this->get(route('admin.dashboard'))->assertOk();
+
+        config(['auth.admin_mfa_required' => true]);
+
+        $this->get(route('admin.dashboard'))->assertRedirect(route('admin.mfa'));
+        Http::assertNothingSent();
+    }
+
+    #[DataProvider('optionalNonAdminRoles')]
+    public function test_optional_mfa_never_elevates_an_existing_non_admin_session(string $role): void
+    {
+        config(['auth.admin_mfa_required' => false]);
+        $user = User::factory()->create(['role' => $role]);
+        $this->actingAs($user)->withSession(['admin_password_confirmation' => ['user_id' => $user->id, 'confirmed_at' => now()->timestamp]]);
+
+        $this->get(route('admin.dashboard'))->assertForbidden();
+        $this->get(route('admin.mfa'))->assertForbidden();
+        $this->get(route('admin.login'))->assertForbidden();
+
+        Http::assertNothingSent();
+    }
+
+    public static function optionalNonAdminRoles(): array
+    {
+        return [['candidate'], ['employer']];
+    }
+
+    public function test_optional_mfa_does_not_turn_an_unverified_legacy_marker_into_confirmation(): void
+    {
+        config(['auth.admin_mfa_required' => false]);
+        $admin = User::factory()->admin()->create();
+
+        $this->actingAs($admin)->withSession(['admin_confirmation' => ['user_id' => $admin->id, 'confirmed_at' => now()->timestamp, 'mfa' => false]])
+            ->get(route('admin.dashboard'))->assertRedirect(route('admin.login'));
+
+        Http::assertNothingSent();
+    }
+
+    #[DataProvider('optionalMfaLocales')]
+    public function test_optional_mfa_login_explains_password_only_in_each_locale(string $locale, string $text): void
+    {
+        config(['auth.admin_mfa_required' => false]);
+
+        $this->withSession(['locale' => $locale])->get(route('admin.login'))->assertOk()->assertSee($text)->assertSee('autocomplete="current-password"', false);
+
+        Http::assertNothingSent();
+    }
+
+    public static function optionalMfaLocales(): array
+    {
+        return [['vi', 'Đăng nhập bằng email và mật khẩu tài khoản quản trị.'],
+            ['en', 'Sign in with your administrator email and password.'],
+            ['ja', '管理者アカウントのメールアドレスとパスワードでログインしてください。']];
+    }
 }

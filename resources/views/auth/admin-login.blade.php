@@ -11,7 +11,7 @@
     <section class="auth-panel panel" aria-labelledby="admin-login-title">
         <p class="eyebrow">{{ __('site.secure_access') }}</p>
         <h1 id="admin-login-title">{{ __('site.admin_login') }}</h1>
-        <p>{{ __('site.admin_login_help') }}</p>
+        <p>{{ __(config('auth.admin_mfa_required', true) !== false ? 'site.admin_login_help' : 'site.admin_password_login_help') }}</p>
         @if(session('status'))<p class="notice" role="status">{{ session('status') }}</p>@endif
         <form method="post" action="{{ route('admin.login.store') }}">
             @csrf
@@ -19,7 +19,7 @@
             <div class="field"><label for="admin-password">{{ __('site.password') }}</label><div class="password-field"><input id="admin-password" name="password" type="password" required autocomplete="current-password" maxlength="256"><button type="button" data-password-toggle data-show-label="{{ __('site.show') }}" data-hide-label="{{ __('site.hide') }}" data-show-aria="{{ __('site.show_password') }}" data-hide-aria="{{ __('site.hide_password') }}" aria-controls="admin-password" aria-pressed="false" aria-label="{{ __('site.show_password') }}">{{ __('site.show') }}</button></div></div>
             <button class="btn btn-primary" type="submit">{{ __('site.admin_login') }}</button>
         </form>
-        <p class="field-help">{{ __('site.admin_session_help') }}</p>
+        <p class="field-help">{{ __(config('auth.admin_mfa_required', true) !== false ? 'site.admin_session_help' : 'site.admin_password_session_help') }}</p>
         <p><a href="{{ route('password.request') }}">{{ __('site.forgot_question') }}</a></p>
         <a href="{{ route('home') }}">{{ __('site.back_home') }}</a>
     </section>
