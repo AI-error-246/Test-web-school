@@ -1,0 +1,25 @@
+{
+    "$schema": "https://www.schemastore.org/package.json",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "vite build && npm run build:sylva",
+        "dev": "vite",
+        "build:sylva": "node --test tests/Frontend/sylva-source.test.mjs && vite build --config vite.sylva.config.js"
+    },
+    "dependencies": {
+        "@designcodeio/threeui": "file:resources/vendor/threeui",
+        "react": "19.3.0",
+        "react-dom": "19.3.0"
+    },
+    "devDependencies": {
+        "@tailwindcss/vite": "^4.0.0",
+        "concurrently": "^10.0.3",
+        "laravel-vite-plugin": "^3.1",
+        "tailwindcss": "^4.0.0",
+        "vite": "^8.0.0"
+    },
+    "optionalDependencies": {
+        "@laravel/multiplex": "^0.4.1"
+    }
+}

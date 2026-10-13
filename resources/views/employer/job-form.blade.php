@@ -1,0 +1,28 @@
+@extends('layouts.app')
+@section('title', $job->exists ? __('workspace.edit_job_title') : __('workspace.create_job'))
+@section('content')
+<div class="container workspace">
+
+    <div class="workspace-main">
+        <div class="page-header"><div><span class="eyebrow">{{ $company->name }}</span><h1>{{ $job->exists ? __('workspace.edit_job') : __('workspace.create_job') }}</h1><p>{{ __('workspace.draft_first') }}</p></div><a class="btn btn-secondary" href="{{ route('employer.jobs') }}">{{ __('workspace.job_list') }}</a></div>
+        @if($job->publication_state === 'OPEN')<div class="alert alert-warning">{{ __('workspace.edit_open_warning') }}</div>@endif
+        @if($job->moderation_state === 'PENDING')<div class="alert alert-info">{{ __('workspace.pending_edit_warning') }}</div>@endif
+        @if($job->moderation_state === 'REJECTED')<div class="alert alert-warning"><strong>{{ __('workspace.job_unapproved') }}</strong> {{ $latestModeration?->reason ?? __('workspace.review_before_submit') }}</div>@endif
+        <form class="panel" method="post" action="{{ $job->exists ? route('employer.jobs.update', $job) : route('employer.jobs.store') }}">
+            @csrf @if($job->exists) @method('PUT') <input type="hidden" name="version" value="{{ $job->version }}"> @endif
+            <div class="form-section"><h2>{{ __('workspace.position_details') }}</h2>
+                <div class="field"><label for="title">{{ __('workspace.job_title_required') }}</label><input id="title" name="title" required maxlength="200" value="{{ old('title', $job->title) }}" placeholder="{{ __('workspace.job_title_example') }}"></div>
+                <div class="field-row"><div class="field"><label for="category_id">{{ __('workspace.category') }}</label><select id="category_id" name="category_id"><option value="">{{ __('workspace.choose_category') }}</option>@foreach($categories as $category)<option value="{{ $category->id }}" @selected((string) old('category_id', $job->category_id) === (string) $category->id)>{{ $category->name }}</option>@endforeach</select></div><div class="field"><label for="location_id">{{ __('workspace.location') }}</label><select id="location_id" name="location_id"><option value="">{{ __('workspace.choose_location') }}</option>@foreach($locations as $location)<option value="{{ $location->id }}" @selected((string) old('location_id', $job->location_id) === (string) $location->id)>{{ $location->name }}</option>@endforeach</select></div></div>
+                <div class="field-row"><div class="field"><label for="work_mode">{{ __('workspace.work_mode_required') }}</label><select id="work_mode" name="work_mode" required>@foreach(['ONSITE' => __('workspace.onsite'), 'REMOTE' => __('workspace.remote'), 'HYBRID' => __('workspace.hybrid')] as $value => $label)<option value="{{ $value }}" @selected(old('work_mode', $job->work_mode) === $value)>{{ $label }}</option>@endforeach</select></div><div class="field"><label for="deadline_at">{{ __('workspace.deadline_vietnam') }}</label><input id="deadline_at" name="deadline_at" type="datetime-local" value="{{ old('deadline_at', $job->deadline_at?->timezone('Asia/Ho_Chi_Minh')->format('Y-m-d\TH:i')) }}"></div></div>
+            </div>
+            <div class="form-section"><h2>{{ __('workspace.job_content') }}</h2><p class="muted text-small">{{ __('workspace.plain_text_help') }}</p>
+                @foreach(['description' => __('workspace.description'), 'requirements' => __('workspace.candidate_requirements'), 'benefits' => __('workspace.benefits_learning')] as $field => $label)<div class="field"><label for="{{ $field }}">{{ $label }}</label><textarea id="{{ $field }}" name="{{ $field }}" maxlength="20000">{{ old($field, $job->{$field}) }}</textarea></div>@endforeach
+            </div>
+            <div class="form-section"><h2>{{ __('workspace.allowance') }}</h2><p class="muted text-small">{{ __('workspace.allowance_help') }}</p><div class="field-row"><div class="field"><label for="allowance_min">{{ __('workspace.from') }}</label><input id="allowance_min" name="allowance_min" type="number" min="0" max="999999999" value="{{ old('allowance_min', $job->allowance_min) }}"></div><div class="field"><label for="allowance_max">{{ __('workspace.to') }}</label><input id="allowance_max" name="allowance_max" type="number" min="0" max="999999999" value="{{ old('allowance_max', $job->allowance_max) }}"></div></div></div>
+            <div class="form-actions"><button class="btn btn-primary">{{ $job->exists ? __('workspace.save_changes') : __('workspace.save_draft') }}</button><a class="btn btn-secondary" href="{{ route('employer.jobs') }}">{{ __('workspace.back') }}</a></div>
+        </form>
+        @if($job->exists)<details class="panel mt-3"><summary>{{ __('workspace.preview_version', ['version' => $job->version]) }}</summary><div class="prose mt-3"><h2>{{ $job->title }}</h2><p>{{ $company->name }}</p>@foreach(['description' => __('workspace.description'), 'requirements' => __('workspace.candidate_requirements'), 'benefits' => __('workspace.benefits')] as $field => $label)<h3>{{ $label }}</h3><p class="preserve-lines">{{ $job->{$field} ?: __('workspace.not_added') }}</p>@endforeach</div></details>@endif
+        @if($job->exists && in_array($job->moderation_state, ['NOT_SUBMITTED', 'REJECTED']))<div class="panel"><h2>{{ __('workspace.ready_candidates') }}</h2><p class="muted">{{ __('workspace.save_before_review') }}</p><form method="post" action="{{ route('employer.jobs.submit', $job) }}" data-confirm="{{ __('workspace.confirm_submit_job') }}">@csrf<input type="hidden" name="version" value="{{ $job->version }}"><button class="btn btn-primary">{{ __('workspace.submit_saved_job') }}</button></form></div>@endif
+    </div>
+</div>
+@endsection

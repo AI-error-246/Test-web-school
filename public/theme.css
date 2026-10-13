@@ -1,0 +1,189 @@
+/* Shared application colors; the authored Sylva document remains isolated. */
+:root,
+html[data-theme="light"] {
+    color-scheme: light;
+    --ink: #26352a;
+    --muted: #596557;
+    --brand: #425f34;
+    --brand-hover: #304a26;
+    --brand-soft: #e8eedc;
+    --navy: #20362a;
+    --lime: #d9edab;
+    --surface: #fffdf7;
+    --surface-soft: #f0f2e8;
+    --background: #f4f4ec;
+    --line: #d5ddcb;
+    --input-line: #7c906e;
+    --danger: #a03142;
+    --on-brand: #fffdf7;
+    --header-surface: #edf0e3f5;
+    --success-bg: #e7f1de;
+    --success-ink: #345328;
+    --success-line: #b9cfa8;
+    --warning-bg: #fbf0d8;
+    --warning-ink: #79561e;
+    --warning-line: #d9c298;
+    --danger-bg: #fbe9e8;
+    --danger-line: #e3bbc0;
+    --info-bg: #e6eff0;
+    --info-ink: #305d69;
+    --info-line: #b7cfd4;
+    --sparkle: #79914c;
+    --shadow: 0 14px 36px rgb(33 52 28 / 8%);
+}
+html[data-theme="dark"] {
+    color-scheme: dark;
+    --ink: #ecf0e4;
+    --muted: #b5c1ab;
+    --brand: #bed894;
+    --brand-hover: #d4e9b3;
+    --brand-soft: #2b402b;
+    --navy: #14291c;
+    --lime: #d9edab;
+    --surface: #1b2b20;
+    --surface-soft: #243528;
+    --background: #111d15;
+    --line: #3d503b;
+    --input-line: #687d60;
+    --danger: #f2a9b2;
+    --on-brand: #1b2c19;
+    --header-surface: #18271df5;
+    --success-bg: #2a412a;
+    --success-ink: #c3e5a3;
+    --success-line: #577545;
+    --warning-bg: #443a22;
+    --warning-ink: #f0d99c;
+    --warning-line: #7f6b3e;
+    --danger-bg: #432c30;
+    --danger-line: #82545c;
+    --info-bg: #243c3e;
+    --info-ink: #b4dbe3;
+    --info-line: #54777d;
+    --sparkle: #cadf9b;
+    --shadow: 0 14px 36px rgb(0 0 0 / 18%);
+}
+
+body { background-color: var(--background); color: var(--ink); }
+::selection { background: var(--brand); color: var(--on-brand); }
+:focus-visible { outline-color: var(--brand); }
+.site-header { background: var(--header-surface); border-color: var(--line); }
+.site-header.is-scrolled { box-shadow: 0 5px 24px rgb(16 31 18 / 12%); }
+.brand, .brand:hover { color: var(--brand); }
+.brand-mark { color: #425f34; }
+html[data-theme="dark"] .brand-mark { color: #365439; }
+.nav-links > a:not(.btn) { color: var(--muted); }
+.nav-links > a:hover, .nav-links > a[aria-current="page"] { color: var(--brand); }
+.nav-toggle, .skip-link, .toolbar-button, .language-switcher select,
+.language-switcher button { color: var(--ink); background: var(--surface); border-color: var(--line); }
+.toolbar-button:hover, .toolbar-dropdown[open] > summary { background: var(--brand-soft); border-color: var(--input-line); }
+.toolbar-panel { background: var(--surface); box-shadow: var(--shadow); }
+.account-summary, .notification-item.is-unread { background: var(--surface-soft); }
+.notification-count { background: var(--brand); color: var(--on-brand); border-color: var(--surface); }
+.avatar-initials, .company-monogram, .company-mark { background: var(--brand-soft); color: var(--brand); border-color: var(--line); }
+.theme-toggle { width: 42px; height: 42px; min-width: 42px; padding: 0; display: inline-grid; place-items: center; border: 1px solid var(--line); border-radius: 13px; background: var(--surface); color: var(--brand); flex-shrink: 0; }
+.theme-toggle:hover { background: var(--brand-soft); border-color: var(--input-line); }
+.theme-toggle:active { transform: scale(.96); }
+.theme-toggle svg { width: 20px; height: 20px; }
+html[data-theme="light"] [data-theme-icon="sun"],
+html[data-theme="dark"] [data-theme-icon="moon"] { display: none; }
+
+.panel, .job-card, .category-link, .search-bar, .stat-card, .table-wrap,
+.sidebar, .auth-shell, .support-panel, .support-job, .site-footer { background: var(--surface); border-color: var(--line); }
+.job-card-footer { border-color: var(--line); }
+.job-card:hover, .category-link:hover { border-color: var(--input-line); }
+.category-link:hover, .data-table th, .data-table tbody tr:hover,
+.empty-state, .auth-note, .job-card-tags > span { background: var(--surface-soft); border-color: var(--line); }
+.category-number, .sidebar nav a, .prose { color: var(--muted); }
+.stat-card strong, .stat-value { color: var(--ink); }
+.stat-card::before, .stat-card:nth-child(2n)::before { background: var(--brand); }
+.workspace-nav a { color: var(--muted); }
+.workspace-nav a:hover, .sidebar nav a:hover { color: var(--brand); background: var(--brand-soft); }
+.workspace-nav a[aria-current="page"] { color: var(--on-brand); background: var(--brand); }
+.process-section { background: var(--surface-soft); border-color: var(--line); }
+.step-number, .process-step > span { border-color: var(--input-line); }
+.process-step > .icon { color: var(--brand); }
+.process-step:hover > .step-number { color: var(--on-brand); }
+.auth-aside { background: var(--navy); color: #d4dfc8; }
+.auth-aside .auth-note { background: #293f2a; border-color: #58744b; }
+.auth-aside .auth-note p { color: #e3ecd7; }
+.final-cta { color: #d9e4ce; }
+.final-cta .btn, .final-cta .btn:hover { color: #1c392e; }
+.timeline li { border-left-color: var(--line); }
+.timeline li::before { border-color: var(--surface); }
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+textarea, select { background-color: var(--surface); color: var(--ink); border-color: var(--input-line); }
+input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
+input[readonly], input:disabled, select:disabled, textarea:disabled { background: var(--surface-soft); color: var(--muted); }
+input[type="file"]::file-selector-button, .password-field button { background: var(--brand-soft); color: var(--brand); }
+.password-field button:hover { background: var(--surface-soft); }
+input:focus, textarea:focus, select:focus { border-color: var(--brand); }
+progress { accent-color: var(--brand); }
+.btn-primary { background: var(--brand); color: var(--on-brand); }
+.btn-primary:hover { background: var(--brand-hover); color: var(--on-brand); }
+.btn-secondary { background: var(--surface); color: var(--ink); border-color: var(--input-line); }
+.btn-secondary:hover { background: var(--brand-soft); color: var(--brand); border-color: var(--brand); }
+.btn-danger { background: var(--surface); color: var(--danger); border-color: var(--danger-line); }
+.btn-danger:hover { background: var(--danger-bg); color: var(--danger); }
+.pagination a, .pagination > span, .pagination li > span { background: var(--surface); border-color: var(--line); }
+.pagination .active > span, .pagination [aria-current="page"], .pagination .current { color: var(--on-brand); background: var(--brand); border-color: var(--brand); }
+.pagination .disabled > span, .pagination [aria-disabled="true"] { color: var(--muted); background: var(--surface-soft); }
+
+.badge, .badge-neutral { color: var(--muted); background: var(--surface-soft); }
+.badge-success { color: var(--success-ink); background: var(--success-bg); }
+.badge-warning { color: var(--warning-ink); background: var(--warning-bg); }
+.badge-danger { color: var(--danger); background: var(--danger-bg); }
+.badge-info { color: var(--info-ink); background: var(--info-bg); }
+.alert { color: var(--success-ink); background: var(--success-bg); border-color: var(--success-line); }
+.alert-error, .alert-danger { color: var(--danger); background: var(--danger-bg); border-color: var(--danger-line); }
+.alert-warning { color: var(--warning-ink); background: var(--warning-bg); border-color: var(--warning-line); }
+.alert-info { color: var(--info-ink); background: var(--info-bg); border-color: var(--info-line); }
+.alert a { color: inherit; }
+.support-launcher { background: var(--brand); color: var(--on-brand); border-color: var(--brand); }
+.support-launcher:hover { background: var(--brand-hover); }
+.support-heading { background: var(--navy); }
+.support-message.is-error { border-color: var(--danger-line); }
+/* The map stylesheet loads later; scope these overrides to the theme root. */
+html[data-theme] .company-map-icon { background: var(--brand-soft); color: var(--brand); }
+html[data-theme] .company-map-canvas { background: var(--surface-soft); }
+html[data-theme] .company-map-placeholder { background-image: linear-gradient(30deg, transparent 49.6%, var(--line) 50%, transparent 50.4%), linear-gradient(120deg, transparent 49.6%, var(--line) 50%, transparent 50.4%); }
+html[data-theme] .company-map-art { color: var(--brand); }
+
+/* Two small, decorative layers; no JavaScript animation or pointer listener. */
+body.has-sparkles { isolation: isolate; }
+.ambient-sparkles { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; contain: strict; }
+.ambient-sparkles::before, .ambient-sparkles::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    color: var(--sparkle);
+    box-shadow: 6vw 18vh 0 currentColor, 24vw 34vh 0 currentColor, 45vw 12vh 0 currentColor, 74vw 26vh 0 currentColor, 92vw 46vh 0 currentColor, 14vw 70vh 0 currentColor, 60vw 80vh 0 currentColor, 86vw 92vh 0 currentColor;
+    opacity: .36;
+}
+.ambient-sparkles::after { width: 2px; height: 2px; top: 7vh; left: 5vw; opacity: .24; }
+@media (prefers-reduced-motion: no-preference) {
+    .ambient-sparkles::before { animation: ambient-twinkle 9s ease-in-out infinite alternate; }
+    .ambient-sparkles::after { animation: ambient-twinkle 12s 2s ease-in-out infinite alternate-reverse; }
+    .theme-toggle { transition: background-color .16s, border-color .16s, transform .16s; }
+    .theme-toggle:hover svg { transform: rotate(-12deg); }
+    .theme-toggle svg { transition: transform .18s; }
+}
+@keyframes ambient-twinkle { from { opacity: .2; transform: translateY(0); } to { opacity: .58; transform: translateY(-9px); } }
+.is-page-hidden .ambient-sparkles::before, .is-page-hidden .ambient-sparkles::after { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+    .ambient-sparkles::before, .ambient-sparkles::after { animation: none; transform: none; }
+    .theme-toggle:active { transform: none; }
+}
+@media (max-width: 1000px) {
+    .workspace-nav a { background: var(--surface-soft); }
+    .workspace-nav a[aria-current="page"] { background: var(--brand); }
+}
+@media (max-width: 540px) { .theme-toggle { width: 38px; min-width: 38px; height: 42px; } }
+@media print {
+    .theme-toggle, .ambient-sparkles { display: none; }
+    html[data-theme] { color-scheme: light; --ink: #18251d; --muted: #485446; --brand: #34522c; --surface: #fff; --surface-soft: #f2f4ee; --background: #fff; --line: #c7cfc3; --input-line: #8b9d82; }
+}

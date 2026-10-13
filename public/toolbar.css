@@ -1,0 +1,99 @@
+/* Compact native disclosures: available with keyboard and without JavaScript. */
+.site-header .header-inner { position: relative; min-height: 72px; gap: 22px; }
+.header-tools { display: flex; align-items: center; gap: 9px; margin-left: auto; order: 3; }
+.site-header .nav-links { order: 2; gap: 22px; }
+.header-tools .language-switcher { margin: 0 5px 0 0; }
+.toolbar-dropdown { position: relative; }
+.toolbar-button { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 42px; height: 42px; border: 1px solid var(--line); border-radius: 13px; padding: 0; color: var(--ink); background: var(--surface); cursor: pointer; list-style: none; }
+.toolbar-button::-webkit-details-marker { display: none; }
+.toolbar-button::marker { content: ''; }
+.toolbar-button:hover, .toolbar-dropdown[open] > summary { background: var(--brand-soft); color: var(--brand); border-color: #bfd8c9; }
+.account-trigger { border-radius: 50%; }
+.account-trigger .avatar-initials { width: 34px; height: 34px; border: 0; }
+.toolbar-panel { position: absolute; z-index: 45; right: 0; top: calc(100% + 12px); width: 290px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); box-shadow: 0 18px 48px #142d3529; overflow: hidden; color: var(--ink); font-size: .9rem; }
+.account-summary { padding: 18px; background: #f2f5f0; overflow-wrap: anywhere; }
+.account-summary strong, .account-summary small { display: block; }
+.account-summary small { color: var(--muted); }
+.account-panel > a, .account-panel form button { display: flex; align-items: center; gap: 11px; width: 100%; padding: 12px 18px; text-decoration: none; font-weight: 600; background: transparent; border: 0; color: var(--ink); text-align: start; }
+.account-panel > a:hover, .account-panel form button:hover { background: var(--brand-soft); color: var(--brand); }
+.account-panel form { margin: 4px 0 0; border-top: 1px solid var(--line); }
+.account-panel form button { justify-content: space-between; color: var(--danger); }
+.notification-trigger { position: relative; }
+.notification-count { position: absolute; top: -5px; right: -6px; min-width: 19px; height: 19px; padding: 0 4px; border-radius: 12px; background: var(--brand); color: white; border: 2px solid white; font-size: .62rem; font-weight: 750; line-height: 15px; }
+.notification-panel { width: 380px; }
+.notification-heading { padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); }
+.notification-heading .toolbar-button { width: 32px; height: 32px; font-size: 1.3rem; }
+.notification-list { list-style: none; margin: 0; padding: 0; max-height: min(440px, 60dvh); overflow-y: auto; overscroll-behavior: contain; }
+.notification-item { padding: 14px 16px; border-bottom: 1px solid var(--line); }
+.notification-item.is-unread { background: #f1f7ef; box-shadow: inset 3px 0 var(--brand); }
+.notification-item.is-selected .notification-item-title { color: var(--brand); }
+.notification-item a { display: block; color: var(--ink); text-decoration: none; overflow-wrap: anywhere; }
+.notification-item a:hover .notification-item-title { text-decoration: underline; }
+.notification-item-title { display: block; font-size: .88rem; }
+.notification-item-body { display: block; margin-top: 3px; color: var(--muted); font-size: .8rem; line-height: 1.6; }
+.notification-meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 8px; color: var(--muted); font-size: .7rem; }
+.notification-read { border: 0; padding: 4px 0; background: transparent; font-size: .73rem; color: var(--brand); text-decoration: underline; }
+.notification-all { padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; font-weight: 650; text-decoration: none; }
+.notification-all:hover { background: var(--brand-soft); }
+.notification-feedback { padding: 14px 16px; margin: 0; font-size: .85rem; color: var(--muted); }
+.notification-retry { margin: 0 16px 14px; }
+.brand-traveler { opacity: 0; }
+.workspace-nav a:active, .toolbar-button:active, .site-header .nav-links > a:active { transform: scale(.97); }
+.profile-overview { display: flex; align-items: center; flex-wrap: wrap; gap: 24px; }
+.profile-avatar, .profile-avatar-placeholder { width: 112px; height: 112px; flex-shrink: 0; border-radius: 28px; object-fit: cover; background: var(--brand-soft); border: 1px solid var(--line); }
+.profile-avatar-placeholder { display: inline-grid; place-items: center; color: var(--brand); font-size: 2.5rem; font-weight: 750; }
+.profile-details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 28px; }
+.profile-page > .panel, .profile-page > .profile-details { margin: 0 0 24px; }
+.profile-details > .panel { margin: 0; min-width: 0; }
+.profile-details dt { font-size: .8rem; color: var(--muted); }
+.profile-details dd { margin: 5px 0 0; overflow-wrap: anywhere; font-weight: 600; }
+.profile-content { min-width: 0; overflow-wrap: anywhere; }
+.profile-content { white-space: pre-line; }
+.profile-heading { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.profile-heading p:last-child { margin-bottom: 0; }
+.profile-facts { margin: 0; display: grid; gap: 18px; }
+.profile-facts dd { white-space: pre-line; }
+.profile-avatar-controls { min-width: 0; }
+.profile-remove { display: inline-flex; align-items: center; gap: 8px; }
+.profile-remove input { width: auto; }
+.profile-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-block: 16px; }
+.profile-avatar-editor { display: flex; align-items: center; gap: 24px; margin-bottom: 24px; }
+.profile-avatar-editor > div { min-width: 0; flex: 1; }
+.profile-readonly { color: var(--muted); overflow-wrap: anywhere; }
+@media (prefers-reduced-motion: no-preference) {
+    .toolbar-button, .site-header .brand-mark, .site-header .nav-links > a { transition: transform .16s var(--ease), background-color .16s, color .16s; }
+    .toolbar-dropdown[open] > .toolbar-panel { animation: toolbar-reveal .16s var(--ease); }
+    .site-header .brand:hover .brand-mark, .site-header .brand:focus-visible .brand-mark { transform: rotate(-6deg) translateY(-2px); }
+    .site-header .brand:hover .brand-traveler, .site-header .brand:focus-visible .brand-traveler { animation: bridge-crossing .65s var(--ease) both; }
+    .notification-trigger.has-new .icon { animation: notification-ring .5s ease; }
+    .site-header .nav-links > a:hover { transform: translateY(-1px); }
+}
+@keyframes toolbar-reveal { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: none; } }
+@keyframes bridge-crossing { 0% { opacity: 0; transform: translateX(0); } 20% { opacity: 1; } 80% { opacity: 1; } 100% { opacity: 0; transform: translateX(18px); } }
+@keyframes notification-ring { 25% { transform: rotate(12deg); } 50% { transform: rotate(-10deg); } 75% { transform: rotate(5deg); } }
+.motion-paused .brand-traveler, .motion-paused .notification-trigger .icon { animation-play-state: paused; }
+@media (max-width: 1200px) {
+    .site-header .header-inner { gap: 10px; }
+    .site-header .nav-links { order: 4; gap: 4px; }
+}
+@media (max-width: 680px) {
+    .toolbar-dropdown { position: static; }
+    .toolbar-panel { top: calc(100% + 5px); right: 0; width: min(380px, calc(100vw - 32px)); }
+    .account-panel { width: min(290px, calc(100vw - 32px)); }
+    .profile-details { grid-template-columns: 1fr; }
+    .profile-overview { flex-direction: column; align-items: flex-start; gap: 18px; }
+    .profile-heading { width: 100%; flex: auto; }
+    .profile-avatar-editor { align-items: flex-start; flex-direction: column; }
+}
+@media (max-width: 540px) {
+    .site-header .header-inner { min-height: 64px; }
+    .site-header .brand-wordmark { display: none; }
+    .site-header .brand-mark { width: 35px; height: 35px; }
+    .header-tools { gap: 6px; }
+    .header-tools .language-switcher { margin-right: 0; }
+    .header-tools .nav-toggle { min-width: 40px; min-height: 42px; }
+    .toolbar-button { width: 40px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .workspace-nav a:active, .toolbar-button:active, .site-header .nav-links > a:active { transform: none; }
+}

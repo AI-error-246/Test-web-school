@@ -1,0 +1,52 @@
+/* Application framing only: the registered ThreeUI sources remain byte-exact. */
+.is-home { isolation: isolate; --home-glass: rgb(249 250 240 / 91%); --home-line: rgb(80 102 61 / 24%); }
+[data-theme="dark"] .is-home { --home-glass: rgb(21 35 26 / 91%); --home-line: rgb(207 226 177 / 20%); }
+.sylva-world { position: fixed; inset: 0; z-index: -1; overflow: hidden; background: #4a4d44; }
+.sylva-stage, .sylva-stage .shader-frame { position: absolute; inset: 0; width: 100%; height: 100%; }
+.sylva-stage { overflow-anchor: none; }
+.sylva-world-shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgb(244 247 229 / 18%), transparent 65%); }
+[data-theme="dark"] .sylva-world-shade { background: linear-gradient(90deg, rgb(8 22 13 / 25%), rgb(8 18 12 / 10%)); }
+.is-home .page-content { pointer-events: none; }
+.is-home .page-content :is(a, button, input, select, textarea, .panel, .job-card, .alert) { pointer-events: auto; }
+.landing-hero.sylva-hero { position: relative; display: flex; align-items: center; min-height: calc(100svh - 140px); padding: 44px 0 110px; margin: 0 0 58px; background: none; border: 0; border-radius: 0; isolation: auto; }
+.sylva-hero .hero-copy { width: min(54%, 620px); padding: clamp(26px, 3vw, 42px); border: 1px solid var(--home-line); border-radius: 26px; background: var(--home-glass); box-shadow: 0 20px 70px rgb(8 20 12 / 9%); pointer-events: auto; }
+.sylva-hero .hero-title { color: var(--ink); font-size: clamp(2.5rem, 4.5vw, 4rem); font-weight: 700; line-height: 1.12; letter-spacing: -.045em; margin-top: 18px; }
+.sylva-hero .hero-title em { color: var(--brand); }
+.sylva-hero .hero-description { color: var(--muted); max-width: 460px; font-size: .95rem; line-height: 1.8; }
+.sylva-hero .hero-kicker { font-size: .66rem; letter-spacing: .1em; color: var(--brand); border-color: var(--line); background: var(--brand-soft); }
+.sylva-hero .hero-search { background: var(--surface); margin-block: 28px 16px; padding: 8px; box-shadow: none; border: 1px solid var(--line); }
+.sylva-hero .hero-search input { color: var(--ink); font-size: .82rem; padding-inline: 6px; }
+.sylva-hero .hero-search .btn { padding-inline: 14px; font-size: .8rem; }
+.sylva-hero .hero-actions { gap: 8px; margin-top: 14px; }
+.sylva-hero .hero-actions > span { width: 100%; color: var(--muted); font-size: .73rem; }
+.sylva-hero .hero-actions a { color: var(--brand); border-color: var(--line); background: var(--surface); font-size: .71rem; }
+.sylva-hero .hero-actions a:hover { background: var(--brand-soft); border-color: var(--brand); }
+.sylva-hero .hero-proof { color: var(--muted); border-color: var(--line); margin-top: 26px; padding-top: 22px; gap: 20px; flex-wrap: wrap; }
+.sylva-hero .hero-proof strong, .sylva-hero .hero-proof strong span { color: var(--ink); }
+.sylva-hero .hero-proof > div > span, .sylva-hero .hero-proof p { color: var(--muted); }
+.sylva-hero .hero-proof .icon { color: var(--brand); }
+.sylva-caption { position: absolute; right: 0; bottom: 30px; display: flex; align-items: center; gap: 13px; max-width: 330px; padding: 15px 20px; background: var(--home-glass); border: 1px solid var(--home-line); border-radius: 16px; pointer-events: none; }
+.sylva-caption-mark { color: var(--brand); font-size: 1.8rem; }
+.sylva-caption strong { display: block; font-size: .63rem; letter-spacing: .14em; text-transform: uppercase; color: var(--brand); }
+.sylva-caption div > span, .sylva-caption noscript { display: block; font-size: .76rem; color: var(--muted); margin-top: 4px; }
+.is-home .page-content > :is(.opportunity-section, .category-section, .process-section) { margin-block: 0 52px; padding: 36px; background: var(--home-glass); border: 1px solid var(--home-line); border-radius: 26px; }
+.is-home .section-intro { gap: 30px; }
+.is-home .category-link, .is-home .job-card { background: var(--surface); }
+.is-home .final-cta { margin-bottom: 30px; pointer-events: auto; }
+.is-home .site-footer { background: var(--home-glass); border-top: 1px solid var(--home-line); }
+@media (max-width: 1100px) {
+    .sylva-hero .hero-copy { width: min(65%, 580px); }
+    .sylva-hero .hero-search { flex-wrap: wrap; }
+    .sylva-hero .hero-search .btn { width: 100%; }
+}
+@media (max-width: 680px) {
+    .landing-hero.sylva-hero { min-height: calc(100svh - 90px); padding: 12px 0 170px; margin-bottom: 22px; align-items: flex-start; }
+    .sylva-hero .hero-copy { width: 100%; padding: 26px 22px; border-radius: 22px; }
+    .sylva-hero .hero-title { font-size: clamp(2.3rem, 9vw, 3.2rem); }
+    .sylva-hero .hero-description { font-size: .88rem; }
+    .sylva-hero .hero-proof { gap: 15px; }
+    .sylva-caption { right: 0; bottom: 30px; max-width: 290px; padding: 12px 15px; }
+    .is-home .page-content > :is(.opportunity-section, .category-section, .process-section) { padding: 25px 20px; border-radius: 22px; margin-bottom: 26px; }
+    .is-home .section-intro { gap: 18px; }
+    .is-home .final-cta { padding: 28px 24px; }
+}

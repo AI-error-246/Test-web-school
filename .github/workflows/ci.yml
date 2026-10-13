@@ -1,0 +1,88 @@
+name: Laravel and frontend checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_DB: internship_test
+          POSTGRES_USER: internship_test
+          # Disposable CI database only; never a hosting or Supabase password.
+          POSTGRES_PASSWORD: ci-only-password
+        ports:
+          - 54329:5432
+        options: >-
+          --health-cmd "pg_isready -U internship_test -d internship_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      APP_ENV: testing
+      APP_DEBUG: 'false'
+      DEMO_MODE: 'false'
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: '54329'
+      DB_DATABASE: internship_test
+      DB_USERNAME: internship_test
+      DB_PASSWORD: ci-only-password
+      DB_URL: ''
+      DB_SSLMODE: disable
+      SUPABASE_DATA_ENABLED: 'false'
+      SUPABASE_CV_DISK: local
+      SUPABASE_SECRET_KEY: ''
+      SUPABASE_DB_URL: ''
+      RUN_PG_CONCURRENCY: '0'
+
+    steps:
+      - name: Check out source without saved credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2 (2.40.0)
+        with:
+          php-version: '8.4'
+          extensions: pdo_pgsql, pdo_sqlite, mbstring, curl, fileinfo, openssl, xml, dom, gd, zip
+          coverage: none
+          tools: composer:v2
+
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+          package-manager-cache: false
+
+      - name: Prepare isolated test configuration
+        run: |
+          cp .env.example .env
+          php -r 'file_put_contents(getenv("GITHUB_ENV"), "APP_KEY=base64:".base64_encode(random_bytes(32)).PHP_EOL, FILE_APPEND);'
+
+      - name: Install locked PHP dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Install locked frontend dependencies
+        run: npm ci
+
+      - name: Verify original scene hashes and build all frontend assets
+        run: npm run build
+
+      - name: Test Laravel against isolated PostgreSQL
+        run: php artisan test --compact

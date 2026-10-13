@@ -1,0 +1,11 @@
+{
+  "name": "@designcodeio/threeui",
+  "version": "0.0.0-sylva.fd922291297d",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/shaders/sylva-living-world/SylvaLivingWorldScene.tsx",
+    "./style.css": "./src/shaders/threeui.css"
+  },
+  "peerDependencies": { "react": "^19.3.0" }
+}

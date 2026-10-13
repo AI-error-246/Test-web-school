@@ -1,0 +1,29 @@
+.company-map { margin: 1.5rem 0; overflow: hidden; }
+.company-map-heading { display: flex; align-items: flex-start; gap: 14px; }
+.company-map-heading h2 { font-size: 1.18rem; margin: 0 0 .4rem; }
+.company-map-heading p { margin: 0 0 1rem; color: var(--muted); overflow-wrap: anywhere; }
+.company-map-icon { display: grid; place-items: center; flex: 0 0 44px; height: 44px; border-radius: 14px; background: #edf3e7; color: #0d6b55; }
+.company-map-canvas { min-height: 280px; position: relative; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: #f0f4ec; }
+.company-map-placeholder { min-height: 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; text-align: center; background-image: linear-gradient(30deg, transparent 49.6%, #dde6d8 50%, transparent 50.4%), linear-gradient(120deg, transparent 49.6%, #dde6d8 50%, transparent 50.4%); background-size: 95px 95px; }
+.company-map-placeholder[hidden], .company-map [hidden] { display: none; }
+.company-map-placeholder p { max-width: 360px; margin: .75rem 0 1rem; color: var(--muted); }
+.company-map-art { color: #467758; }
+.company-map-canvas iframe { display: block; width: 100%; height: 320px; border: 0; background: var(--surface); }
+.company-map-status:empty { display: none; }
+.company-map-status { margin: .75rem 0 0; }
+.company-map-footer { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-top: 1rem; }
+.company-map-footer .field-help { margin: 0; max-width: 650px; }
+.company-map-footer .btn { flex-shrink: 0; }
+.company-map-accuracy { margin: .65rem 0 0; }
+@media (max-width: 640px) {
+    .company-map-footer { align-items: flex-start; flex-direction: column; gap: 12px; }
+    .company-map-footer .btn { width: 100%; }
+    .company-map-canvas iframe { height: 280px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+    .company-map-art { transition: transform 180ms ease; }
+    .company-map-placeholder:focus-within .company-map-art { transform: translateY(-4px); }
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .company-map-placeholder:hover .company-map-art { transform: translateY(-4px); }
+}

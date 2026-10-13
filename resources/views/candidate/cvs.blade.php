@@ -1,0 +1,12 @@
+@extends('layouts.app')
+@section('title',__('workspace.manage_cvs'))
+@section('content')
+<div class="alert" role="status">{{ __('workspace.cv_scan_notice') }}</div>
+@foreach($cvs as $document)
+    @if(($document->scan_status ?? 'PENDING') !== 'CLEAN')
+        <p class="alert">{{ $document->display_name }}: {{ match($document->scan_status) { 'INFECTED' => __('workspace.cv_infected'), 'ERROR' => __('workspace.cv_scan_error'), default => __('workspace.cv_scan_pending') } }}</p>
+    @endif
+@endforeach
+<div class="page-header"><h1>{{ __('workspace.your_cvs') }}</h1><p>{{ __('workspace.cv_limits') }}</p></div><form class="panel" method="post" action="{{ route('candidate.cvs.store') }}" enctype="multipart/form-data">@csrf<h2>{{ __('workspace.upload_new_cv') }}</h2><div class="field-row"><label class="field">{{ __('workspace.display_name') }}<input name="display_name" value="{{ old('display_name') }}" required maxlength="120" placeholder="{{ __('workspace.cv_example') }}"></label><label class="field">{{ __('workspace.pdf_file') }}<input type="file" name="cv" accept=".pdf,application/pdf" required></label></div><button class="btn btn-primary">{{ __('workspace.upload_cv') }}</button></form>
+<div class="grid grid-2">@forelse($cvs as $cv)<article class="panel"><span class="badge {{ $cv->archived_at?'badge-neutral':'badge-success' }}">{{ $cv->archived_at?__('workspace.archived'):__('workspace.in_use') }}</span><h2>{{ $cv->display_name }}</h2><p>{{ number_format($cv->size_bytes/1024,1) }} KB · {{ $cv->uploaded_at->format('d/m/Y') }}</p><div class="actions"><a href="{{ route('cvs.show',$cv) }}" target="_blank" rel="noopener" class="btn btn-secondary">{{ __('workspace.view_pdf') }}</a>@unless($cv->archived_at)<form method="post" action="{{ route('candidate.cvs.archive',$cv) }}" data-confirm="{{ __('workspace.confirm_archive_cv') }}">@csrf<button class="btn btn-secondary">{{ __('workspace.archive') }}</button></form>@endunless</div><details><summary>{{ __('workspace.rename') }}</summary><form method="post" action="{{ route('candidate.cvs.update',$cv) }}">@csrf @method('PATCH')<label class="field">{{ __('workspace.cv_name') }}<input name="display_name" value="{{ $cv->display_name }}" maxlength="120" required></label><button class="btn btn-secondary">{{ __('workspace.save_name') }}</button></form></details></article>@empty<div class="empty-state">{{ __('workspace.no_cvs') }}</div>@endforelse</div>
+@endsection
