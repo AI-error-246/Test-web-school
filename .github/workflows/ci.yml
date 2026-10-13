@@ -73,7 +73,7 @@ jobs:
       - name: Prepare isolated test configuration
         run: |
           cp .env.example .env
-          php -r 'file_put_contents(getenv("GITHUB_ENV"), "APP_KEY=base64:".base64_encode(random_bytes(32)).PHP_EOL, FILE_APPEND);'
+          php -r '$key = "base64:".base64_encode(random_bytes(32)); echo "::add-mask::".$key.PHP_EOL; file_put_contents(getenv("GITHUB_ENV"), "APP_KEY=".$key.PHP_EOL, FILE_APPEND);'
 
       - name: Install locked PHP dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
