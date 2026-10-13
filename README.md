@@ -2,7 +2,9 @@
 
 Website tuyển dụng thực tập với giao diện Blade tiếng Việt/Anh/Nhật, CSS/JS trực tiếp, backend Laravel 13 và database PostgreSQL. Supabase Auth quản lý đăng ký, xác nhận email và đăng nhập thật. Không lưu mật khẩu người dùng trong PostgreSQL ứng dụng.
 
-## Chuẩn bị GitHub và host chạy thử — D40 (14/10/2026)
+## GitHub riêng tư — D40 (14/10/2026)
+
+**Quyết định hiện hành:** người dùng chọn chỉ đưa mã lên GitHub và dừng triển khai hosting. Không còn chờ tài khoản Oracle, không tạo VM/domain hoặc deploy. Website tiếp tục dùng cách chạy local hiện có. Các ghi chép đánh giá host và hướng dẫn Oracle bên dưới chỉ lưu tham khảo, không phải tác vụ đang chờ thực hiện.
 
 Repository: [AI-error-246/Test-web-school](https://github.com/AI-error-246/Test-web-school), đã chuyển **private** và đưa mã lên `main` theo xác nhận của người dùng. Thư mục gốc repository là **Laravel hiện tại**, không phải toàn bộ workspace. Giữ `composer.lock`, `package-lock.json` và nguồn ThreeUI; không đưa `.env`, key, CV/ảnh, database dump, session/log, `vendor`, `node_modules` hoặc asset build vào Git. Các báo cáo lịch sử liên kết `../../06_Testing` bên dưới chỉ có trong workspace gốc, không kèm theo repository ứng dụng.
 
@@ -26,7 +28,7 @@ Khi clone sang máy mới, cài PHP/Composer/Node/PostgreSQL, chạy `composer i
 
 Nguồn ThreeUI exact vẫn giữ nguyên. Bản Community công khai chỉ có `living-green`, trong khi bundle exact đã được cung cấp có thêm variants; chưa xác minh quyền phân phối công khai toàn bộ bundle đó. Không tự gán giấy phép MIT của Community cho phần nguồn khác; giữ các thông báo tác giả/font và xác minh điều kiện nguồn trước khi công khai mã. [Thông tin tài sản của ThreeUI](https://github.com/MengTo/threeui/blob/main/ASSET-LICENSES.md).
 
-### Tạo tài khoản Oracle Always Free
+### Tham khảo lịch sử: tạo tài khoản Oracle Always Free (đã dừng)
 
 1. Mở [trang đăng ký Oracle Cloud](https://signup.cloud.oracle.com/), chọn quốc gia cư trú thật, nhập thông tin cá nhân và xác minh email.
 2. Chọn **Home Region** cẩn thận: tài nguyên Always Free phải được tạo trong vùng này. Chọn vùng gần người dùng nếu có; tài nguyên A1 có thể tạm hết chỗ.
@@ -110,7 +112,7 @@ Hoạt ảnh bổ sung: minh họa hero xuất hiện theo nhịp tối đa 360 
 
 ## GitHub và hosting
 
-Trạng thái hiện hành nằm ở mục **D40** đầu tài liệu: mã đã ở repository private, người dùng chọn miễn phí và cần hướng dẫn đăng ký Oracle; chưa có VM/domain hoặc bản website online. **GitHub Pages không chạy backend PHP/Laravel.** Chỉ đưa mã nguồn và cấu hình mẫu lên Git; `.env`, API key, tài khoản Admin, CV/ảnh, database/backup, log, session và `.tools` được giữ ngoài repository.
+Trạng thái hiện hành nằm ở mục **D40** đầu tài liệu: mã đã ở repository private; người dùng chọn chỉ dùng GitHub và dừng triển khai hosting. Không còn chờ đăng ký Oracle; website tiếp tục chạy local. **GitHub Pages không chạy backend PHP/Laravel.** Chỉ đưa mã nguồn và cấu hình mẫu lên Git; `.env`, API key, tài khoản Admin, CV/ảnh, database/backup, log, session và `.tools` được giữ ngoài repository.
 
 Khi chọn host cần thống nhất HTTPS, cache/session bền vững, SMTP/worker và bộ quét CV tương thích hệ điều hành. Không tắt cơ chế chặn CV chưa được quét để deploy. Phí hosting/database (nếu có) độc lập với trợ lý nội bộ không dùng API AI trả phí.
 
