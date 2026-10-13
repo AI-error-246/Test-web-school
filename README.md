@@ -4,11 +4,13 @@ Website tuyển dụng thực tập với giao diện Blade tiếng Việt/Anh/N
 
 ## Chuẩn bị GitHub và host chạy thử — D40 (14/10/2026)
 
-Repository đích: [AI-error-246/Test-web-school](https://github.com/AI-error-246/Test-web-school). Thư mục gốc repository là **Laravel hiện tại**, không phải toàn bộ workspace. Giữ `composer.lock`, `package-lock.json` và nguồn ThreeUI; không đưa `.env`, key, CV/ảnh, database dump, session/log, `vendor`, `node_modules` hoặc asset build vào Git. Các báo cáo lịch sử liên kết `../../06_Testing` bên dưới chỉ có trong workspace gốc, không kèm theo repository ứng dụng.
+Repository: [AI-error-246/Test-web-school](https://github.com/AI-error-246/Test-web-school), đã chuyển **private** và đưa mã lên `main` theo xác nhận của người dùng. Thư mục gốc repository là **Laravel hiện tại**, không phải toàn bộ workspace. Giữ `composer.lock`, `package-lock.json` và nguồn ThreeUI; không đưa `.env`, key, CV/ảnh, database dump, session/log, `vendor`, `node_modules` hoặc asset build vào Git. Các báo cáo lịch sử liên kết `../../06_Testing` bên dưới chỉ có trong workspace gốc, không kèm theo repository ứng dụng.
 
 Workflow `.github/workflows/ci.yml` cài dependency theo lock, build frontend (kèm sáu SHA nguồn/font) và chạy PHPUnit với PostgreSQL riêng. PHP 8.4, Node 24, PostgreSQL 18; database test tại `127.0.0.1:54329/internship_test`, không dùng secrets Supabase. CI chỉ kiểm thử, không deploy hoặc chạy migration cloud. Bộ browser smoke Windows vẫn cần `.tools` của workspace, chưa đưa vào Linux CI. Các bài concurrency dùng database riêng và hiện tắt trong CI đầu tiên.
 
 Kiểm tra local trước khi đưa lên Git: Composer strict validate đạt; build production và 6 hash đạt; toàn suite có **620 cases: 615 PASS, 5 concurrency SKIP, 3.647 assertions**. Đây chưa phải bằng chứng GitHub Actions hoặc host Linux đã chạy thành công.
+
+Xem kết quả Linux của từng commit tại [GitHub Actions](https://github.com/AI-error-246/Test-web-school/actions). CI đã giúp phát hiện thư mục `tests/Unit` rỗng không được Git lưu và bài kiểm tra chuyển dữ liệu phụ thuộc scanner thật của Windows. Đã giữ thư mục bằng placeholder, mô phỏng scanner trong test transfer và thêm hai trường hợp chặn khi `INFECTED`/`ERROR`. Bài transfer riêng: **8 PASS / 105 assertions**, kể cả khi máy không có scanner. Không thay cơ chế quét thật của website; CI này chưa nghiệm thu ClamAV thực tế trên host.
 
 Người dùng chọn **miễn phí trước nhưng phải thử đủ nộp CV, ảnh và quét mã độc**. Vì vậy chưa chọn Render Free làm host đầy đủ: dịch vụ này không giữ tệp local qua restart và chỉ có 512 MB RAM, chưa phù hợp bộ quét hiện tại. Phương án đề xuất là một VM Always Free có volume bền vững, chạy Laravel và ClamAV, tiếp tục dùng Supabase Auth/Database/private CV. Ví dụ Oracle A1 còn phụ thuộc tài khoản, quota và khả năng cấp máy; chưa tạo tài nguyên hoặc bật gói trả phí. Xem [giới hạn Render](https://render.com/docs/free), [compute Render](https://render.com/docs/compute-plans), [Oracle Always Free](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm).
 
@@ -23,6 +25,15 @@ Các việc bắt buộc trước mở host:
 Khi clone sang máy mới, cài PHP/Composer/Node/PostgreSQL, chạy `composer install`, `npm ci`, `npm run build`, sao chép `.env.example` thành `.env` riêng tư và cấu hình môi trường; tạo APP_KEY riêng. Chỉ chạy migration vào database đích đã kiểm tra. Không dùng `run.ps1` hoặc đường `.tools` khi chưa có runtime workspace; dùng trực tiếp Composer/Artisan. Không dùng GitHub Pages để chạy backend PHP: [Pages phục vụ website tĩnh](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages).
 
 Nguồn ThreeUI exact vẫn giữ nguyên. Bản Community công khai chỉ có `living-green`, trong khi bundle exact đã được cung cấp có thêm variants; chưa xác minh quyền phân phối công khai toàn bộ bundle đó. Không tự gán giấy phép MIT của Community cho phần nguồn khác; giữ các thông báo tác giả/font và xác minh điều kiện nguồn trước khi công khai mã. [Thông tin tài sản của ThreeUI](https://github.com/MengTo/threeui/blob/main/ASSET-LICENSES.md).
+
+### Tạo tài khoản Oracle Always Free
+
+1. Mở [trang đăng ký Oracle Cloud](https://signup.cloud.oracle.com/), chọn quốc gia cư trú thật, nhập thông tin cá nhân và xác minh email.
+2. Chọn **Home Region** cẩn thận: tài nguyên Always Free phải được tạo trong vùng này. Chọn vùng gần người dùng nếu có; tài nguyên A1 có thể tạm hết chỗ.
+3. Hoàn tất xác minh điện thoại/thẻ trực tiếp trên Oracle. Không gửi mật khẩu, OTP, số thẻ hoặc khóa SSH vào chat. Oracle có thể giữ khoản xác minh thẻ tạm thời; đây khác với phí dịch vụ. Xem [FAQ chính thức](https://www.oracle.com/cloud/free/faq/).
+4. Khi vào được Console, giữ tài khoản Free Tier; không chọn nâng cấp Pay As You Go. Báo lại tên Home Region để chuẩn bị máy chủ. Đề xuất một VM Ubuntu A1 2 OCPU / 8 GB RAM / 50 GB đĩa, chỉ tạo khi Console xác nhận nằm trong hạn mức miễn phí; đây chưa phải tài nguyên đã tạo.
+
+Theo [hạn mức Oracle hiện hành](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm) kiểm ngày 14/10/2026, A1 Always Free tương đương tổng 2 OCPU / 12 GB RAM, ổ boot/block tổng 200 GB. Không dùng thông số 4 OCPU / 24 GB của hướng dẫn cũ. Máy ít hoạt động có thể bị thu hồi; cần sao lưu, không coi gói miễn phí là cam kết uptime. Nếu báo hết tài nguyên, thử availability domain khác hoặc chờ; không tự nâng cấp trả phí.
 
 ## Nền toàn trang và sáng/tối — D39 (14/10/2026)
 
@@ -99,7 +110,7 @@ Hoạt ảnh bổ sung: minh họa hero xuất hiện theo nhịp tối đa 360 
 
 ## GitHub và hosting
 
-GitHub không bắt buộc cho mọi cách triển khai; nên dùng repository private để quản lý phiên bản và kết nối deploy. **GitHub Pages không chạy backend PHP/Laravel.** Cần hosting hỗ trợ Laravel/PHP và kết nối Supabase; lựa chọn hosting/domain/ngân sách chưa chốt. Chưa tạo repository hoặc publish trong đợt này. Trước khi push phải loại `.env`, API key, tài khoản Admin, file CV, database/backup, log, session và thư mục `.tools` chứa credential. Chỉ đưa mã nguồn và cấu hình mẫu không chứa secret lên Git.
+Trạng thái hiện hành nằm ở mục **D40** đầu tài liệu: mã đã ở repository private, người dùng chọn miễn phí và cần hướng dẫn đăng ký Oracle; chưa có VM/domain hoặc bản website online. **GitHub Pages không chạy backend PHP/Laravel.** Chỉ đưa mã nguồn và cấu hình mẫu lên Git; `.env`, API key, tài khoản Admin, CV/ảnh, database/backup, log, session và `.tools` được giữ ngoài repository.
 
 Khi chọn host cần thống nhất HTTPS, cache/session bền vững, SMTP/worker và bộ quét CV tương thích hệ điều hành. Không tắt cơ chế chặn CV chưa được quét để deploy. Phí hosting/database (nếu có) độc lập với trợ lý nội bộ không dùng API AI trả phí.
 

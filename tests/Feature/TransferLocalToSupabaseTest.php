@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Console\Commands\TransferLocalToSupabase;
+use App\Services\CvMalwareScanner;
 use Database\Seeders\DemoSeeder;
 use Illuminate\Database\Connection;
 use Illuminate\Support\Facades\Artisan;
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class TransferLocalToSupabaseTest extends TestCase
@@ -28,6 +30,7 @@ class TransferLocalToSupabaseTest extends TestCase
         $this->prepareDatabases();
         DB::table('cv_documents')->where('id', 1)->update(['archived_at' => '2026-01-01 00:00:00']);
         $this->fakeCloud();
+        $this->mock(CvMalwareScanner::class, fn ($mock) => $mock->shouldReceive('scan')->times(4)->andReturn(['status' => 'CLEAN', 'engine' => 'test', 'reason' => null]));
         $this->artisan('app:transfer-local-to-supabase', ['--execute' => true])->assertSuccessful();
         $journal = json_decode(Storage::disk('local')->get('local-cloud-transfer.json'), true);
         $candidate = $journal['users']['11111111-1111-4111-8111-111111111111']['id'];
@@ -60,11 +63,33 @@ class TransferLocalToSupabaseTest extends TestCase
     {
         $this->prepareDatabases();
         $this->fakeCloud(true);
+        $this->mock(CvMalwareScanner::class, fn ($mock) => $mock->shouldReceive('scan')->once()->andReturn(['status' => 'CLEAN', 'engine' => 'test', 'reason' => null]));
         $this->artisan('app:transfer-local-to-supabase', ['--execute' => true])->assertFailed();
         $this->assertSame(0, DB::connection('transfer_target')->table('users')->count());
         $this->assertSame(5, DB::table('users')->count());
         $this->assertFalse(json_decode(Storage::disk('local')->get('local-cloud-transfer.json'), true)['completed']);
         Http::assertSent(fn ($request): bool => str_contains($request->url(), '/object/authenticated/'));
+    }
+
+    #[DataProvider('blockedScanResults')]
+    public function test_unsafe_or_unscannable_pdf_prevents_business_database_commit(string $status): void
+    {
+        $this->prepareDatabases();
+        $this->fakeCloud();
+        $this->mock(CvMalwareScanner::class, fn ($mock) => $mock->shouldReceive('scan')->once()->andReturn(['status' => $status, 'engine' => 'test', 'reason' => 'blocked']));
+
+        $this->artisan('app:transfer-local-to-supabase', ['--execute' => true])->assertFailed();
+
+        $this->assertSame(0, DB::connection('transfer_target')->table('users')->count());
+        $this->assertSame(5, DB::table('users')->count());
+        $this->assertFalse(json_decode(Storage::disk('local')->get('local-cloud-transfer.json'), true)['completed']);
+        $this->assertSame('local', config('supabase.cv_disk'));
+        Http::assertSent(fn ($request): bool => str_contains($request->url(), '/object/authenticated/'));
+    }
+
+    public static function blockedScanResults(): array
+    {
+        return ['malware detected' => ['INFECTED'], 'scanner unavailable' => ['ERROR']];
     }
 
     public function test_nonempty_target_is_not_overwritten(): void
