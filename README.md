@@ -10,7 +10,7 @@ Biến cấu hình chỉ đọc ở backend; mặc định trong code và `.env.
 
 Lỗi “Chưa thể thiết lập xác thực” trước đó đã xác định từ phản hồi thật: SVG QR 321.600 byte vượt giới hạn 200.000 byte của website. Đã nâng giới hạn lên 1 MiB, giữ kiểm dữ liệu và hiển thị qua ảnh, không nhúng SVG trực tiếp. Log chẩn đoán chỉ ghi bước/trạng thái/độ dài, không ghi khóa QR, OTP hoặc token. Có regression nhận QR lớn và từ chối quá giới hạn để dùng khi bật lại MFA.
 
-Kiểm chứng D41: **201 tests PostgreSQL / 1.427 assertions PASS** cho đăng nhập/MFA/recovery/phân quyền/security headers/traffic guard/đa ngôn ngữ; gồm 25 ca mới cho chế độ chỉ mật khẩu. Pint dirty và diff check đạt. Website thật 3001 đã đọc cấu hình false, trang đăng nhập trả HTTP 200 và hướng dẫn mới. Các test Supabase dùng HTTP fake, không phải bằng chứng đăng nhập tài khoản Admin thật sau sửa; không hoàn tất QR/OTP thật thay người dùng.
+Kiểm chứng D41: **201 tests PostgreSQL / 1.427 assertions PASS** cho đăng nhập/MFA/recovery/phân quyền/security headers/traffic guard/đa ngôn ngữ; gồm 26 ca mới cho chế độ chỉ mật khẩu. Pint dirty và diff check đạt. Website thật 3001 đã đọc cấu hình false, trang đăng nhập trả HTTP 200 và hướng dẫn mới. Các test Supabase dùng HTTP fake, không phải bằng chứng đăng nhập tài khoản Admin thật sau sửa; không hoàn tất QR/OTP thật thay người dùng. [CI Linux của commit 7d48152](https://github.com/AI-error-246/Test-web-school/actions/runs/38467114609) **SUCCESS: 644 PASS / 5 concurrency SKIP / 3.836 assertions**, build frontend đạt.
 
 ## GitHub riêng tư — D40 (14/10/2026)
 
