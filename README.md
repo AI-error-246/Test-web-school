@@ -2,7 +2,11 @@
 
 Kết nối sinh viên tìm việc thực tập với doanh nghiệp tuyển dụng. Website hỗ trợ **tiếng Việt, tiếng Anh và tiếng Nhật**.
 
-**Trạng thái:** chạy trên máy cá nhân, mã nguồn lưu tại [GitHub private](https://github.com/AI-error-246/Test-web-school). Chưa có bản online; đưa mã lên GitHub không tự khởi chạy website.
+**Xem giao diện online:** [Mở bản demo InternBridge](https://ai-error-246.github.io/Test-web-school/).
+
+Bản GitHub Pages có dữ liệu mẫu, giao diện Việt/Anh/Nhật, sáng/tối và các màn hình **Ứng viên · Nhà tuyển dụng · Admin**. Chọn vai trò ở thanh demo trên cùng để xem. Link vẫn mở được khi máy cá nhân tắt. **Đây là bản trình diễn giao diện:** không đăng nhập thật, không gửi CV, không lưu thay đổi, không kết nối Supabase. Không nhập thông tin cá nhân thật vào demo.
+
+Ứng dụng đầy đủ vẫn chạy **local**, theo hướng dẫn bên dưới. [Repository mã nguồn](https://github.com/AI-error-246/Test-web-school) hiện công khai.
 
 ## Chức năng chính
 
@@ -27,7 +31,22 @@ Giao diện có nền Sylva chuyển động, chế độ sáng/tối và menu r
 | Ảnh hồ sơ, phiên đăng nhập, bản xem thử email | Thư mục riêng tư trên máy chạy Laravel, trong `storage/` |
 | Logo công ty | Disk `public`, tại `storage/app/public/companies`; hiển thị theo quyền truy cập công ty |
 
-PostgreSQL local dành cho kiểm thử và bản dữ liệu nguồn đã giữ lại. GitHub chỉ lưu mã nguồn; không chứa database, CV, ảnh hoặc thông tin đăng nhập.
+PostgreSQL local dành cho kiểm thử và bản dữ liệu nguồn đã giữ lại. GitHub lưu mã nguồn và bản demo tĩnh với dữ liệu giả; không chứa database, CV, ảnh riêng tư hoặc thông tin đăng nhập thật.
+
+## Cập nhật bản demo GitHub Pages
+
+Sau khi push vào `main`, workflow [Publish interface demo](.github/workflows/pages.yml) tự build cảnh Community, dựng giao diện từ Blade bằng SQLite trong bộ nhớ, kiểm tra tệp/liên kết rồi xuất bản. Theo dõi tại [Actions](https://github.com/AI-error-246/Test-web-school/actions/workflows/pages.yml). Pages chỉ nhận thư mục kết quả `storage/app/pages`, không nhận mã PHP, `.env` hoặc dữ liệu thật. Workflow không cần secret Supabase.
+
+Để dựng lại bản tĩnh trên máy đã cài dependencies:
+
+```powershell
+node node_modules/vite/bin/vite.js build --config vite.pages.config.js
+php tests/Support/export_pages.php
+node --test tests/Frontend/pages-preview.test.mjs
+php -S 127.0.0.1:3010 -t storage/app/pages
+```
+
+Mở `http://127.0.0.1:3010`. Đây là bản demo; chạy website có nghiệp vụ thật bằng hướng dẫn kế tiếp.
 
 ## Chạy trong workspace hiện tại
 
@@ -104,4 +123,4 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\PROJECT\04_Code\laravel\ru
 - CV: PDF tối đa **5 MB**, tối đa **5 bản đang hoạt động**. Máy mới cần PHP `upload_max_filesize >= 5M`, `post_max_size >= 8M` và bộ quét Defender trên Windows hoặc ClamAV trên Linux. Không cho dùng CV nếu chưa quét sạch.
 - Email trạng thái đang ở chế độ **xem thử**, chưa gửi SMTP thật. Chạy `php artisan schedule:work` để xử lý hàng chờ; bản xem thử nằm trong khu vực thông báo của ứng viên.
 - Giữ `.env`, API key, tài khoản Admin, CV/ảnh, database backup và session/log ngoài Git.
-- Giữ nguyên nguồn và thông báo tác giả ThreeUI trong [resources/vendor/threeui](resources/vendor/threeui). Quyền phân phối công khai toàn bộ bundle chưa được xác minh; repository hiện giữ private.
+- Bản Pages chỉ build cảnh **Living Green Community** từ [nguồn và giấy phép đã ghim](resources/vendor/threeui-community/LICENSE); không đưa các variant ngoài Community vào tài nguyên triển khai. Bundle gốc vẫn nằm trong `resources/vendor/threeui` để giữ nguồn đã yêu cầu; quyền phân phối toàn bộ bundle gốc chưa được xác minh.
