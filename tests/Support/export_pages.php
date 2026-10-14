@@ -271,7 +271,7 @@ foreach ($labels as $locale => $text) {
             $banner .= '<a href="'.$filename($locale, $destination, $choice).'">'.$text[array_search($choice, ['', 'candidate', 'employer', 'admin'], true) + 2].'</a>';
         }
         $banner .= '</nav></aside><div id="preview-notice" class="preview-notice" role="status" hidden>'.$text[6].'</div>';
-        $html = str_replace('</head>', $head.'</head>', $html);
+        $html = str_replace('</head>', '<link rel="icon" href="assets/favicon.ico">'.$head.'</head>', $html);
         $html = preg_replace('/(<body[^>]*>)/', '$1'.$banner, $html, 1);
         if (preg_match('/sb_secret_|sb_publishable_|supabase\.co|csrf-token|name="_token"|preview\.invalid|127\.0\.0\.1/', $html)) {
             throw new RuntimeException('Unsafe or unresolved data in '.$name);
@@ -280,7 +280,7 @@ foreach ($labels as $locale => $text) {
         $count++;
     }
 }
-file_put_contents($output.'/index.html', '<!doctype html><html lang="vi"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="0;url=vi-index.html"><title>InternBridge — Demo</title><a href="vi-index.html">Xem giao diện InternBridge</a></html>');
+file_put_contents($output.'/index.html', '<!doctype html><html lang="vi"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="assets/favicon.ico"><meta http-equiv="refresh" content="0;url=vi-index.html"><title>InternBridge — Demo</title><a href="vi-index.html">Xem giao diện InternBridge</a></html>');
 file_put_contents($output.'/.nojekyll', '');
 file_put_contents($output.'/robots.txt', "User-agent: *\nDisallow: /\n");
 (new Filesystem)->deleteDirectory($isolated);

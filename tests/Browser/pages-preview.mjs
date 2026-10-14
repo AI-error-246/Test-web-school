@@ -14,6 +14,7 @@ try {
     await page.setViewport({ width: 1440, height: 1000 });
     page.on('pageerror', error => errors.push(error.message));
     page.on('requestfailed', request => failed.push(`${request.url()}: ${request.failure()?.errorText}`));
+    page.on('response', response => { if (response.status() >= 400) failed.push(`${response.url()}: HTTP ${response.status()}`); });
     page.on('request', request => { if (['xhr', 'fetch'].includes(request.resourceType()) || request.method() !== 'GET') network.push(request.url()); });
     page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
     for (const path of ['vi-index.html', 'vi-jobs.html', 'vi-candidate-candidate.html', 'vi-candidate-candidate-profile.html', 'vi-employer-employer.html', 'vi-admin-admin.html', 'en-index.html', 'ja-index.html']) {
